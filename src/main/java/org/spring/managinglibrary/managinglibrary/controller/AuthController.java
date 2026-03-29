@@ -1,55 +1,51 @@
 package org.spring.managinglibrary.managinglibrary.controller;
 
-import org.spring.managinglibrary.managinglibrary.service.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.spring.managinglibrary.managinglibrary.model.Member;
+import org.spring.managinglibrary.managinglibrary.service.JwtService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
-import org.spring.managinglibrary.managinglibrary.dto.LoginRequest;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtService jwtService,
+                          UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
         String password = request.get("password");
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        // Authenticate
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        String token = jwtUtil.generateToken(userDetails);
+        // Load user — must be Member since JwtService.generateToken() takes Member
+        Member member = (Member) userDetailsService.loadUserByUsername(email);
+        String token = jwtService.generateToken(member);
 
-        return Map.of("token", token);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 
-    @PostMapping("/api/auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        // Logic for authenticating user and generating JWT
-        return ResponseEntity.ok(new JwtResponse("dummy-jwt-token"));
-    }
-
-    @GetMapping("/api/auth/user")
-    public ResponseEntity<?> getUserDetails(Authentication authentication) {
-        // Logic for returning authenticated user details
+    @GetMapping("/me")
+    public ResponseEntity<Object> getCurrentUser(
+            org.springframework.security.core.Authentication authentication) {
         return ResponseEntity.ok(authentication.getPrincipal());
     }
 }
