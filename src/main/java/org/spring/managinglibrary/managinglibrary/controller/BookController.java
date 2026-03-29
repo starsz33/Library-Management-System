@@ -28,7 +28,7 @@ public class BookController {
     @DeleteMapping("/{Id}")
     public String deleteBook(@PathVariable Long Id){
         bookService.deleteBook(Id);
-        return "Book deleted successfull";
+        return "Book deleted successfully";
     }
     @PutMapping("/{Id}")
     public Books updateBook(@PathVariable Long Id,@RequestBody Books books){

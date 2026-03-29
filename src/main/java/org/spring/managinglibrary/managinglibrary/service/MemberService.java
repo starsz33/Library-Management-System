@@ -39,11 +39,14 @@ public class MemberService {
         return memberMapper.toResponseDTO(member);
     }
 
+    public MemberResponseDTO getMemberByName(String name) throws ResourceNotFoundException {
+        Member member = memberRepository.findByNameContainingIgnoreCase(name).orElseThrow(() -> new ResourceNotFoundException("Member not found with name: " + name));
+        return memberMapper.toResponseDTO(member);
+    }
+
     public MemberResponseDTO updateMember(Long id, MemberRequestDTO memberRequestDTO) throws ResourceNotFoundException {
         Member member = memberRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + id));
-        member.setName(memberRequestDTO.getName());
-        member.setEmail(memberRequestDTO.getEmail());
-        member.setPhoneNumber(memberRequestDTO.getPhoneNumber());
+        memberMapper.updateEntity(memberRequestDTO, member);
         return memberMapper.toResponseDTO(memberRepository.save(member));
     }
 

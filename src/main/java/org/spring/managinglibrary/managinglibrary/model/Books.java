@@ -21,4 +21,15 @@ public class Books {
     private Integer isbn;
     private String author;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public Integer getIsbn() {
+        return isbn;
+    }
 }
