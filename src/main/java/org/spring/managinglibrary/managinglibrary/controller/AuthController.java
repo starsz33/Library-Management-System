@@ -48,4 +48,8 @@ public class AuthController {
             org.springframework.security.core.Authentication authentication) {
         return ResponseEntity.ok(authentication.getPrincipal());
     }
+    @GetMapping("/test")
+    public String test() {
+        return "Security is working!";
+    }
 }

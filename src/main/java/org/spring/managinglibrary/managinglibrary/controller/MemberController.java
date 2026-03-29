@@ -7,6 +7,7 @@ import org.spring.managinglibrary.managinglibrary.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,9 +41,10 @@ public class MemberController {
    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody MemberRequestDTO memberRequestDTO) throws ResourceNotFoundException {
        return ResponseEntity.ok(memberService.updateMember(id, memberRequestDTO));
    }
-   @DeleteMapping("/{id}")
-   public ResponseEntity<Void> deleteMember(@PathVariable Long id){
-       memberService.deleteMember(id);
-       return ResponseEntity.noContent().build();
-   }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
+        memberService.deleteMember(id);
+        return ResponseEntity.noContent().build();
+    }
 }
