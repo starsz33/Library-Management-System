@@ -34,16 +34,15 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        // Pass UserDetailsService to constructor
+
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
         return provider;
     }
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        // Create ProviderManager with our provider that uses BCrypt
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
-        provider.setPasswordEncoder(passwordEncoder()); // 👈 set BCrypt here
+        provider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(provider);
     }
 }

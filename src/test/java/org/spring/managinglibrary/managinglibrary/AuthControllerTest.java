@@ -51,23 +51,20 @@ class AuthControllerTest {
 
     @Test
     void testLoginSuccess() throws Exception {
-        // 1. Build mock member
+
         Member mockMember = new Member();
         mockMember.setEmail("test@library.com");
         mockMember.setPassword("password123");
         mockMember.setName("Test User");
         mockMember.setRole(Role.MEMBER);
-
-        // 2. Mock dependencies — note generateToken takes Member not UserDetails
         when(userDetailsService.loadUserByUsername("test@library.com"))
                 .thenReturn(mockMember);
-        when(jwtService.generateToken(any(Member.class)))  // 👈 Member not UserDetails
+        when(jwtService.generateToken(any(Member.class)))
                 .thenReturn("mock-jwt-token");
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(new UsernamePasswordAuthenticationToken(
                         mockMember, null, mockMember.getAuthorities()));
-
-        // 3. Build request body
+        //requesting body
         Map<String, String> loginRequest = new HashMap<>();
         loginRequest.put("email", "test@library.com");
         loginRequest.put("password", "password123");

@@ -19,7 +19,6 @@ public class ManagingLibraryApplication {
     @Bean
     public CommandLineRunner seedMembers(MemberRepository repo, PasswordEncoder encoder) {
         return args -> {
-            // Delete old users first to re-seed with correct password format
             repo.findByEmail("admin@library.com").ifPresent(repo::delete);
             repo.findByEmail("member@library.com").ifPresent(repo::delete);
 
